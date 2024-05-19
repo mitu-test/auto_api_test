@@ -1,0 +1,121 @@
+tests:
+  - case: "GET请求 - 查询参数"
+    input:
+      host: "{{$.host.app}}"
+      method: "GET"
+      path: "user_{{$.urls.start}}"
+      headers:
+        Authorization: "{{$.users[?(@.id==1)].tokens.10001}}"
+      params:
+        param1: "{$.user_id}"  #动态参数
+        param2: "user_{{$.random_number}}" #随机数
+        param3: "{{$.mysql.lifestyle.user_post_sql[0]['id']}}" #数据库提取字段
+        param4: "{{$.extract[name='GET请求 - 查询参数'].data[0].id}}" #上下游接口关联字段提取
+        sign:
+    expectation:
+      response:
+        result_code: success
+        data.channels[0].pipes_domain_code: fans_new_page
+        extra:
+          - jsonpath: "$.items[0].name"
+            expected: "Item 1"
+          - sql: "${{mysql.lifestyle.vlog_user_sql}}"
+            expected: "345666"
+
+  - case: "POST请求 - JSON数据"
+    input:
+      host: "{{$.host.app}}"
+      method: "GET"
+      path: "/app/bs/mix/discovery/start"
+      headers:
+        Authorization: "{{$.users[?(@.id==1)].tokens.10001}}"
+      params:
+        param1: value1
+        param2: value2
+        sign:
+      json:
+        key1: value1
+        key2: value2
+    expectation:
+      result_code: success
+      data:
+        - jsonpath: "$.data.name"
+          expected: "Created Item"
+
+  - name: "POST请求 - JSON数据-1"
+    input:
+      host: "{{$.host.app-int}}"
+      method: POST
+      path: "/csd/csd_content/compilation/hotList/seq"
+      headers:
+        Authorization: "{{$.users[?(@.id==1)].tokens.10002}}"
+      params:
+        app_id: 10002
+        sign:
+      json:
+        {
+          "compilation_hot_id_list": "{{$.urls.json}}"
+        }
+    expectation:
+      result_code: success
+    data:
+      - jsonpath: "$.data.name"
+        expected: "Created Item"
+  - name: "POST请求 - data数据"
+    input:
+      host: "{{$.host.app}}"
+      method: "POST"
+      path: "/app/bs/mix/discovery/start"
+      headers:
+        Authorization: "{{$.users[?(@.id==1)].tokens.10001}}"
+      params:
+        param1: value1
+        param2: value2
+        sign:
+      data:
+        key1: value1
+        key2: value2
+    expected:
+      result_code: success
+      data:
+        - jsonpath: "$.data.name"
+          expected: "Created Item"
+
+  - name: "POST请求 - 表单数据"
+    input:
+      host: "{{$.host.app}}"
+      method: "POST"
+      path: "/app/bs/mix/discovery/start"
+      headers:
+        Authorization: "{{$.users[?(@.id==1)].tokens.10001}}"
+      form_data:
+        username: "user1"
+        password: "pass1"
+    expected:
+      status_code: 200
+      data:
+        - jsonpath: "$.user.name"
+          expected: "user1"
+
+
+  - name: "POST请求 - 文件上传"
+    input:
+      host: "{{$.host.app}}"
+      method: "GET"
+      path: "/app/bs/mix/discovery/start"
+      headers:
+        Authorization: "{{$.users[?(@.id==1)].tokens.10001}}"
+      files:
+        file1: "path/to/file1.txt"
+        file2: "path/to/file2.txt"
+    expected:
+      status_code: 200
+      $.data.modules[?(@.module_id==15)].module_name: '配置器'
+      $.data.modules[?(@.module_id==15)].module_code: car_configurator
+      data:
+        - jsonpath: "$.files[0].name"
+          expected: "file1.txt"
+        - jsonpath: "$.files[1].size"
+          expected: 1024  # 假设文件大小为1024字节
+
+

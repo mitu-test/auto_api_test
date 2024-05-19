@@ -1,0 +1,34 @@
+service: oapi_dingtalk
+host:
+  app: https://oapi.dingtalk.com
+  app_api: https://api.dingtalk.com
+urls:
+  # 获取认证access_token
+  gettoken: "/gettoken"
+  # 公告模块
+  create_blackboard: "/topapi/blackboard/create"
+  update_blackboard: "/topapi/blackboard/update"
+  delete_blackboard: "/topapi/blackboard/delete"
+  blackboard_detail: "/topapi/blackboard/get"
+  blackboard_list: "/topapi/blackboard/listids"
+  blackboard_category_list: "/topapi/blackboard/category/list"
+  blackboard_list_open: "/topapi/blackboard/listtopten"
+  # 日志模块
+  create_report: "/topapi/report/create"
+  template_detail: "/topapi/report/template/getbyname"
+  report_list: "/topapi/report/list"
+  report_simple_list: "/topapi/report/simplelist"
+  report_statistics_listby: "/topapi/report/statistics/listbytype"
+  report_receiver_list: "/topapi/report/receiver/list"
+  report_comment_list: "/topapi/report/comment/list"
+  report_unread_amount: "/topapi/report/getunreadcount"
+  template_listby: "/topapi/report/template/listbyuserid"
+  # 员工管理
+  pre_employee_list: "/topapi/smartwork/hrm/employee/querypreentry"
+  employee_list: "/topapi/smartwork/hrm/employee/queryonjob"
+  ex_employee_list: "/v1.0/hrm/employees/dismissions"
+ # 签到
+  checkin_record: "/topapi/checkin/record/get"
+secret:
+  appkey: "dingmfx3bd1stpjbzlpw"
+  appsecret: "xfBtHPAj3eAZzpcXR3eMargwNTGHzdDkxP-EnYe7V7ONWcB5rzxYyydO1cdgnAr2"

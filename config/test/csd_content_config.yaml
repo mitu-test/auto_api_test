@@ -1,0 +1,47 @@
+service: csd-content
+refresh_token: 1
+host:
+  app: https://app-stg.nio.com
+  app-int: https://app-stg.nioint.com
+  uds-int: https://uds-stg.nioint.com
+  bff-int: https://cab-stg.nioint.com
+  app-cab: https://cab-stg.nioint.com
+  h5: https://gateway-front-external-stg.nio.com
+  h5-int: https://gateway-front-external-stg.nioint.com
+  demo: https://nio-community-tool.nioint.com:443
+
+urls:
+  start: "/app/bs/mix/discovery/start"
+  demo: "/app/bs/mix/discovery/demo"
+  demo1: "/app/bs/mix/discovery/demo1"
+  demo2: "/communitytool/user/info"
+
+secret:
+  10001: 89b7897F8EeC62e3C96892581aB2A422
+  10002: 2bc9b00fdcf8f7ded6d77afdd7077e79
+  10006: 68f828215165cd42cab37e8643a00019
+  10086: f5f842cc0dfd11e78549005056a94446
+  100135: c5e98379f3e426AAf0BdEfF8e2Aa5BDc
+  10008: 4cfdb3115a617a508ef584f896c08133
+users:
+  - id: 1
+    account_id: 646953375
+    mobile: 98762669641
+    verification_code: 796314
+    community_id_1: c-9f4e4a3d-8036-46
+    community_id_2: c-629f2d30-0d67-4d
+    tokens:
+      '10001': Bearer 2.0NBiYAh/AIrJT87fyG5hwxn34cBOtYW0itj0+Akh3dSs=
+      '10002': Bearer 2.09j+22kEkI/jX3cIp0DPEHQO8+JdgznNi+XBqi6H0efI=
+      '10006': Bearer 2.0+AxjwllSMO0jJbGLC5hiTvuhBNoEVkDHhpavXzEgJJg=
+      '10008': Bearer 2.0Qg2V0mkrIg8+RcyxaJA2MT4da5F6QeSWrIAyRrXgxNA=
+  - id: 2
+    account_id: 26722849
+    mobile: 98762754794
+    verification_code: 975625
+    tokens:
+      '10001': Bearer 2.0E3kvZQTOB7g+H0zvuz/IoeSrowpyIRUWXeygOhHjCio=
+      '10002': Bearer 2.0dmZfx1st5l6qh1Us623WL7ukeFeSIFippBk4UWjwz2U=
+
+
+

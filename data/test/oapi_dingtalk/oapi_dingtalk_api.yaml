@@ -1,0 +1,496 @@
+tests:
+  # 获取认证access_token
+  - case: "获取app access_token成功"
+    input:
+      host: "{{$.host.app}}"
+      method: "GET"
+      path: "{{$.urls.gettoken}}"
+      params:
+        appkey: "{{$.secret.appkey}}"
+        appsecret: "{{$.secret.appsecret}}"
+    expectation:
+      validate:
+        - eq: [ errmsg, "ok" ]
+        - eq: [ expires_in, 7200 ]
+        - nnul: [ access_token, ]
+    report:
+      author: jun.guo
+      severity: critical
+      description: 主要测试点：成功获取access_token
+  # 公告模块
+  - case: "创建公告成功"
+    input:
+      host: "{{$.host.app}}"
+      method: "POST"
+      path: "{{$.urls.create_blackboard}}"
+      params:
+        access_token: "{{$.extract.api[?case=='获取app access_token成功'].access_token}}"
+      json:
+        {
+          "create_request": {
+            "push_top": true,
+            "operation_userid": "0113005751430150226",
+            "ding": false,
+            "private_level": 0,
+            "blackboard_receiver": {
+              "deptid_list": [ -1 ],
+              "userid_list": [ "0113005751430150226" ]
+            },
+            "title": "入职须知-111",
+            "content": "欢迎加入我们的大家庭-111"
+          }
+        }
+    expectation:
+      validate:
+        - eq: [ errmsg, "ok" ]
+        - eq: [ result, True ]
+        - eq: [ success, True]
+    report:
+      author: jun.guo
+      severity: critical
+      description: 主要测试点：创建公告成功
+  - case: "创建公告失败"
+    input:
+      host: "{{$.host.app}}"
+      method: "POST"
+      path: "{{$.urls.create_blackboard}}"
+      params:
+        access_token: "{{$.extract.api[?case=='获取app access_token成功'].access_token}}"
+      json:
+        {
+          "create_request": {
+            "push_top": true,
+            "operation_userid": "015901692149969142503",
+            "ding": false,
+            "private_level": 0,
+            "blackboard_receiver": {
+              "deptid_list": [ -1 ],
+              "userid_list": [ "015901692149969142503" ]
+            },
+            "title": "入职须知",
+            "content": "欢迎加入我们的大家庭"
+          }
+        }
+    expectation:
+      validate:
+        - eq: [ errmsg, "没有管理权限" ]
+        - eq: [ success, False ]
+    report:
+      author: jun.guo
+      severity: critical
+      description: 主要测试点：创建公告失败
+  - case: "获取公告列表ID"
+    input:
+      host: "{{$.host.app}}"
+      method: "POST"
+      path: "{{$.urls.blackboard_list}}"
+      params:
+        access_token: "{{$.extract.api[?case=='获取app access_token成功'].access_token}}"
+      json:
+        {
+          "query_request": {
+            "operation_userid": "0113005751430150226",
+            "page": 1,
+            "page_size": 100
+          }
+        }
+    expectation:
+      validate:
+        - eq: [ errmsg, "ok" ]
+        - eq: [ success, True ]
+        - nnul: [ result, ]
+    report:
+      author: jun.guo
+      severity: critical
+      description: 主要测试点：获取公告列表ID
+  - case: "更新公告"
+    input:
+      host: "{{$.host.app}}"
+      method: "POST"
+      path: "{{$.urls.update_blackboard}}"
+      params:
+        access_token: "{{$.extract.api[?case=='获取app access_token成功'].access_token}}"
+      json:
+        {
+          "update_request": {
+            "ding": true,
+            "operation_userid": "0113005751430150226",
+            "category_id": "9724f5548171f5a2c08a9632919413e1",
+            "blackboard_id": "61101fba3dbba4d418d31ad55fde66ba",
+            "title": "入职须知-1",
+            "content": "欢迎加入我们的大家庭-1",
+            "notify": true
+          }
+        }
+    expectation:
+      validate:
+        - eq: [ errmsg, "ok" ]
+        - eq: [ success, True]
+        - eq: [ result, True ]
+    report:
+      author: jun.guo
+      severity: critical
+      description: 主要测试点：更新公告
+  - case: "获取公告详情"
+    input:
+      host: "{{$.host.app}}"
+      method: "POST"
+      path: "{{$.urls.blackboard_detail}}"
+      params:
+        access_token: "{{$.extract.api[?case=='获取app access_token成功'].access_token}}"
+      json:
+        {
+          "operation_userid": "0113005751430150226",
+          "blackboard_id": "39c36f9c385befeca36023b06bf35f98",
+        }
+    expectation:
+      validate:
+        - eq: [ errmsg, "ok" ]
+        - eq: [ success, True ]
+        - eq: [ result.author, "米兔软件测试" ]
+        - eq: [ result.category_id, "9724f5548171f5a2c08a9632919413e1" ]
+    report:
+      author: jun.guo
+      severity: critical
+      description: 主要测试点：获取公告详情
+  - case: "获取公告分类列表"
+    input:
+      host: "{{$.host.app}}"
+      method: "POST"
+      path: "{{$.urls.blackboard_category_list}}"
+      params:
+        access_token: "{{$.extract.api[?case=='获取app access_token成功'].access_token}}"
+      json:
+        {
+          "operation_userid": "0113005751430150226"
+        }
+    expectation:
+      validate:
+        - eq: [ errmsg, "ok" ]
+        - eq: [ success, True ]
+        - eq: [ "result[0].name", "普通"]
+        - el: [ result,3 ]
+    report:
+      author: jun.guo
+      severity: critical
+      description: 主要测试点：获取公告分类列表
+  - case: "获取用户可查看的公告"
+    input:
+      host: "{{$.host.app}}"
+      method: "POST"
+      path: "{{$.urls.blackboard_list_open}}"
+      params:
+        access_token: "{{$.extract.api[?case=='获取app access_token成功'].access_token}}"
+      json:
+        {
+          "userid": "015901692149969142503"
+        }
+    expectation:
+      validate:
+        - eq: [ errmsg, "ok" ]
+        - eq: [ "blackboard_list[0].title", "入职须知-111" ]
+    report:
+      author: jun.guo
+      severity: critical
+      description: 主要测试点：获取公告分类列表
+  # 日志模块
+  - case: "创建日志"
+    input:
+      host: "{{$.host.app}}"
+      method: "POST"
+      path: "{{$.urls.create_report}}"
+      params:
+        access_token: "{{$.extract.api[?case=='获取app access_token成功'].access_token}}"
+      json:
+        {
+          "create_report_param": {
+            "contents": [
+              {
+                "content_type": "markdown",
+                "sort": "1",
+                "type": "1",
+                "content": "你的镁偷走了我的锌",
+                "key": "今日完成工作"
+              },
+              {
+                "content_type": "markdown",
+                "sort": "2",
+                "type": "1",
+                "content": "哪有什么满眼星辰，分明就是满眼的你。",
+                "key": "明天工作计划"
+              }
+            ],
+            "dd_from": "report",
+            "template_id": "18ed6cb6928dae21b0bde9c45b2bf020",
+            "userid": "0113005751430150226",
+            "to_chat": true
+          }
+        }
+    expectation:
+      validate:
+        - eq: [ errmsg, "ok" ]
+        - nnul: [ result, ]
+    report:
+      author: jun.guo
+      severity: critical
+      description: 主要测试点：创建日志
+  - case: "获取模板详情"
+    input:
+      host: "{{$.host.app}}"
+      method: "POST"
+      path: "{{$.urls.template_detail}}"
+      params:
+        access_token: "{{$.extract.api[?case=='获取app access_token成功'].access_token}}"
+      json:
+        {
+          "template_name": "每天日报",
+          "userid": "0113005751430150226"
+        }
+    expectation:
+      validate:
+        - eq: [ errmsg, "ok" ]
+        - eq: [ result.name,"每天日报" ]
+        - nnul: [ result.fields, ]
+    report:
+      author: jun.guo
+      severity: critical
+      description: 主要测试点：获取模板详情
+  - case: "获取用户发出的日志列表"
+    input:
+      host: "{{$.host.app}}"
+      method: "POST"
+      path: "{{$.urls.report_list}}"
+      params:
+        access_token: "{{$.extract.api[?case=='获取app access_token成功'].access_token}}"
+      json:
+        {
+          "cursor": "0",
+          "start_time": 1712915205000,
+          "template_name": "每天日报",
+          "size": 10,
+          "end_time": 1720777605000,
+          "userid": "0113005751430150226"
+        }
+    expectation:
+      validate:
+        - eq: [ errmsg, "ok" ]
+        - nnul: [ "result.data_list[0].contents",  ]
+    report:
+      author: jun.guo
+      severity: critical
+      description: 主要测试点：获取用户发出的日志列表
+  - case: "获取用户发送日志的概要信息"
+    input:
+      host: "{{$.host.app}}"
+      method: "POST"
+      path: "{{$.urls.report_simple_list}}"
+      params:
+        access_token: "{{$.extract.api[?case=='获取app access_token成功'].access_token}}"
+      json:
+        {
+          "cursor": "0",
+          "start_time": 1712915205000,
+          "template_name": "每天日报",
+          "size": 10,
+          "end_time": 1720777605000,
+          "userid": "0113005751430150226"
+        }
+    expectation:
+      validate:
+        - eq: [ errmsg, "ok" ]
+        - nnul: [ "result.data_list", ]
+    report:
+      author: jun.guo
+      severity: critical
+      description: 主要测试点：获取用户发送日志的概要信息
+  - case: "获取日志相关人员列表"
+    input:
+      host: "{{$.host.app}}"
+      method: "POST"
+      path: "{{$.urls.report_statistics_listby}}"
+      params:
+        access_token: "{{$.extract.api[?case=='获取app access_token成功'].access_token}}"
+      json:
+        {
+          "report_id": "18ed6d882d888d54ca7dd854e13932b0",
+          "type": 0,
+          "offset": 0,
+          "size": 100
+        }
+    expectation:
+      validate:
+        - eq: [ errmsg, "ok" ]
+        - nnul: [ result, ]
+    report:
+      author: jun.guo
+      severity: critical
+      description: 主要测试点：获取日志相关人员列表
+  - case: "获取日志接收人员列表"
+    input:
+      host: "{{$.host.app}}"
+      method: "POST"
+      path: "{{$.urls.report_receiver_list}}"
+      params:
+        access_token: "{{$.extract.api[?case=='获取app access_token成功'].access_token}}"
+      json:
+        {
+          "offset": 0,
+          "size": 100,
+          "report_id": "18ed6d882d888d54ca7dd854e13932b0"
+        }
+    expectation:
+      validate:
+        - eq: [ errmsg, "ok" ]
+        - nnul: [ result, ]
+    report:
+      author: jun.guo
+      severity: critical
+      description: 主要测试点：获取日志接收人员列表
+  - case: "获取日志评论详情"
+    input:
+      host: "{{$.host.app}}"
+      method: "POST"
+      path: "{{$.urls.report_comment_list}}"
+      params:
+        access_token: "{{$.extract.api[?case=='获取app access_token成功'].access_token}}"
+      json:
+        {
+          "offset": 0,
+          "size": 20,
+          "report_id": "18ed6d882d888d54ca7dd854e13932b0"
+        }
+    expectation:
+      validate:
+        - eq: [ errmsg, "ok" ]
+        - nnul: [ result, ]
+    report:
+      author: jun.guo
+      severity: critical
+      description: 主要测试点：获取日志评论详情
+  - case: "获取用户日志未读数"
+    input:
+      host: "{{$.host.app}}"
+      method: "POST"
+      path: "{{$.urls.report_unread_amount}}"
+      params:
+        access_token: "{{$.extract.api[?case=='获取app access_token成功'].access_token}}"
+      json:
+        {
+          "userid": "0113005751430150226"
+        }
+    expectation:
+      validate:
+        - eq: [ errmsg, "ok" ]
+    report:
+      author: jun.guo
+      severity: critical
+      description: 主要测试点：获取用户日志未读数
+  - case: "获取用户可见的日志模板"
+    input:
+      host: "{{$.host.app}}"
+      method: "POST"
+      path: "{{$.urls.template_listby}}"
+      params:
+        access_token: "{{$.extract.api[?case=='获取app access_token成功'].access_token}}"
+      json:
+        {
+          "offset": "0",
+          "size": "100",
+          "userid": "0113005751430150226"
+        }
+    expectation:
+      validate:
+        - eq: [ errmsg, "ok" ]
+        - nnul: [ result.template_list, ]
+    report:
+      author: jun.guo
+      severity: critical
+      description: 主要测试点：获取用户可见的日志模板
+  # 员工管理
+  - case: "获取待入职员工列表"
+    input:
+      host: "{{$.host.app}}"
+      method: "POST"
+      path: "{{$.urls.pre_employee_list}}"
+      params:
+        access_token: "{{$.extract.api[?case=='获取app access_token成功'].access_token}}"
+      json:
+        {
+          "offset": 0,
+          "size": 50
+        }
+    expectation:
+      validate:
+        - eq: [ errmsg, "ok" ]
+        - eq : [success,True ]
+    report:
+      author: jun.guo
+      severity: critical
+      description: 主要测试点：获取待入职员工列表
+  - case: "获取在职员工列表"
+    input:
+      host: "{{$.host.app}}"
+      method: "POST"
+      path: "{{$.urls.employee_list}}"
+      params:
+        access_token: "{{$.extract.api[?case=='获取app access_token成功'].access_token}}"
+      json:
+        {
+          "status_list": "2,3,5,-1",
+          "size": "50",
+          "offset": "0"
+        }
+    expectation:
+      validate:
+        - eq: [ errmsg, "ok" ]
+        - eq: [ success,True ]
+        - el: [ result.data_list,2 ]
+    report:
+      author: jun.guo
+      severity: critical
+      description: 主要测试点：获取在职员工列表
+  - case: "获取离职员工列表"
+    input:
+      host: "{{$.host.app_api}}"
+      method: "GET"
+      path: "{{$.urls.ex_employee_list}}"
+      headers:
+        {
+          "x-acs-dingtalk-access-token": "{{$.extract.api[?case=='获取app access_token成功'].access_token}}",
+          "Content-Type": "application/json"
+        }
+    expectation:
+      validate:
+        - nul: [ userIdList, ]
+        - eq: [ hasMore,False ]
+    report:
+      author: jun.guo
+      severity: critical
+      description: 主要测试点：获取离职员工列表
+  # 签到
+  - case: "获取用户签到记录"
+    input:
+      host: "{{$.host.app}}"
+      method: "POST"
+      path: "{{$.urls.checkin_record}}"
+      params:
+        access_token: "{{$.extract.api[?case=='获取app access_token成功'].access_token}}"
+      json:
+        {
+          "cursor": 0,
+          "start_time": 1713425892000,
+          "size": "100",
+          "end_time": 1714117092000,
+          "userid_list": "0113005751430150226"
+        }
+    expectation:
+      validate:
+        - eq: [ errmsg,"ok" ]
+    report:
+      author: jun.guo
+      severity: critical
+      description: 主要测试点：获取用户签到记录
+
+
+
+

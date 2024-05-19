@@ -1,0 +1,110 @@
+tests:
+  - case: "GET请求 - 提取参数"
+    input:
+      host: "{{$.host.demo}}"
+      method: "GET"
+      path: "{{$.urls.demo2}}"
+      params:
+        env: test_cn
+        mobiles: 19521503860
+        is_prod: false
+    expectation:
+      validate:
+        - eq: [result_code, "success"]
+        - eq: ["data[0].identity","pre_owner"]
+        - neq: ["data[0].identity","re_owner"]
+        - eq: ["{{$.extract.db.mysql_test.user_post_sql.[0]['id']}}", 100991]
+        - lt: ["data[0].user_id",9953368]
+        - le: ["data[0].user_id",995337]
+        - gt: ["data[0].user_id",995336]
+        - ge: ["data[0].user_id",995337]
+        - in: ["data[0].user_id",[995337,995335]]
+        - nin: ["data[0].user_id",[995339,995330]]
+        - contains: ["data[0].identity","pre"]
+        - ncontains: ["data[0].identity","hahha"]
+        - nul: ["data[0].is_employe",]
+        - nnul: ["data[0].is_app_user",]
+        - el: [data,1]
+        - nel: [data,2]
+        - ltl: [data,2]
+        - lel: [data,1]
+        - gtl: [data,0]
+        - gel: [data,1]
+        - stw: ["data[0].identity_name","准"]
+        - edw: ["data[0].identity","owner"]
+        - rex: ["data[0].identity","^p"]
+    report:
+      author: jun.guo
+      severity: critical
+      description: 主要测试点：11111
+
+  - case: "GET请求 - 提取参数--222"
+    input:
+      host: "{{$.host.demo}}"
+      method: "GET"
+      path: "{{$.urls.demo2}}"
+      params:
+        env: test_cn
+        mobiles: 19521503860
+        is_prod: false
+    expectation:
+      validate:
+        - eq: [ result_code, "success" ]
+        - eq: [ "data[0].identity","pre_owner" ]
+        - neq: [ "data[0].identity","re_owner" ]
+        - eq: [ "{{$.extract.db.mysql_test.user_post_sql.[0]['id']}}", 100991 ]
+        - lt: [ "data[0].user_id",9953368 ]
+        - le: [ "data[0].user_id",995337 ]
+        - gt: [ "data[0].user_id",995336 ]
+        - ge: [ "data[0].user_id",995337 ]
+        - in: [ "data[0].user_id",[ 995337,995335 ] ]
+        - nin: [ "data[0].user_id",[ 995339,995330 ] ]
+        - contains: [ "data[0].identity","pre" ]
+        - ncontains: [ "data[0].identity","hahha" ]
+        - nul: [ "data[0].is_employe", ]
+        - nnul: [ "data[0].is_app_user", ]
+        - el: [ data,1 ]
+        - nel: [ data,2 ]
+        - ltl: [ data,2 ]
+        - lel: [ data,1 ]
+        - gtl: [ data,0 ]
+        - gel: [ data,1 ]
+        - stw: [ "data[0].identity_name","准" ]
+        - edw: [ "data[0].identity","owner" ]
+        - rex: [ "data[0].identity","^p" ]
+    report:
+      author: jun.guo
+      severity: blocker
+      description: 主要测试点：22222
+  - case: "GET请求 - 查询参数"
+    input:
+      host: "{{$.host.app}}"
+      method: "GET"
+      path: "user_{{$.urls.start}}"
+      demo: "{{$.urls.demo}}_demo"
+      demo1: "hss_{{$.random_number}}_demo1"
+      headers:
+        Authorization: '{{$.users[?id ==`1`].tokens."10001"}}'
+      params:
+        param1: "{{$.urls.demo}}"  #动态参数
+        param2: "user_{{$.random_number}}" #随机数
+        param3: "{{$.extract.db.mysql_test.user_post_sql.[0]['id']}}" #数据库提取字段
+        param4: "{{$.extract.api[?case=='GET请求 - 提取参数'].data[0].user_id}}" #上下游接口关联字段提取
+        sign:
+      json:
+        {
+          "www": "33"
+        }
+      para1:
+        param1: "eeeee" #动态参数
+        param2: "rrrrrr" #随机数
+
+    expectation:
+      validate:
+        - eq: [result_code, "success"]
+        - eq: ["data[0].identity","pre_owner"]
+    report:
+      author: jun.guo
+      severity: trivial
+      description: 主要测试点：33333
+
