@@ -47,12 +47,14 @@ res = requests.get(url_suites, auth=(USERNAME, TOKEN))
 s_url = f"{report_url}/#suites/"
 # print('s_url', s_url)
 url_raw_list = jmespath.search(
-    "children[].children[].children[].children[?status=='failed'||status=='broken'].{name:name,parentUid:parentUid,uid:uid,status:status,tags:tags}", res.json())
+    "children[].children[].children[].children[?status=='failed'||status=='broken'].{name:name,parentUid:parentUid,uid:uid,status:status,tags:tags}",
+    res.json())
 # print("url_raw_list", url_raw_list)
 
 url_list = []
 for raw in url_raw_list[0]:
-    url_dict = {"name": raw["name"], "url": s_url + raw["parentUid"] + "/" + raw["uid"] + "/","uid":raw["uid"],"status":raw["status"],"author":raw["tags"][0]}
+    url_dict = {"name": raw["name"], "url": s_url + raw["parentUid"] + "/" + raw["uid"] + "/", "uid": raw["uid"],
+                "status": raw["status"], "author": raw["tags"][0]}
     url_list.append(url_dict)
 # print("url_list", url_list)
 
@@ -74,7 +76,6 @@ data = {
     }
 }
 requests.post(url=webhook, json=data)
-
 # 单个报告，详细数据
 # http://localhost:8080/job/auto_api_test/76/allure/data/test-cases/9a4eba68509440c8.json
 
@@ -82,28 +83,52 @@ phone_mapping = {
     "jun.guo": "19521503860",
     "jim.guo": "17764591649"
 }
-
 single_url = f"{report_url}/data/test-cases/"
 for case in url_list:
     url = single_url + str(case["uid"]) + ".json"
-    res = requests.get(url,auth=(USERNAME, TOKEN)).json()
+    res = requests.get(url, auth=(USERNAME, TOKEN)).json()
     case["message"] = res["statusMessage"]
-print("url_list",url_list)
-author_list = list(set(jmespath.search("[*].author",url_list)))
+print("url_list", url_list)
+author_list = list(set(jmespath.search("[*].author", url_list)))
 # print("author_list",author_list)
-failed_list = jmespath.search("[?status=='failed']",url_list)
-print("failed_list",failed_list)
-broken_list = jmespath.search("[?status=='broken']",url_list)
-print("broken_list",broken_list)
+failed_list = jmespath.search("[?status=='failed']", url_list)
+print("failed_list", failed_list)
+broken_list = jmespath.search("[?status=='broken']", url_list)
+print("broken_list", broken_list)
+phone_list = []
+first_string = f"""<font color="">钉钉oapi接口测试报错信息汇总</font>"""
 
+failed_info = f"""
+        >【失败用例】:
+        """
+broken_info = f""" >【错误用例】:
+        """
+failed_string = ""
+broken_string = ""
+for url_info in url_list:
+    if url_info["status"] == "failed":
+        failed_string += f""" ><font color="comment">{url_info["name"]}</font>
+        ><font color="info">[{url_info["message"]}]({url_info["url"]})</font>
+        """
+    elif url_info["status"] == "broken":
+        broken_string += f"""><font color="comment">{url_info["name"]}</font>
+        ><font color="info">[{url_info["message"]}]({url_info["url"]})</font>
+        """
+if not failed_string:
+    failed_string = f"""><font color="comment">无</font>"""
+if not broken_string:
+    broken_string = f"""><font color="comment">无</font>"""
+end_string = f""" 
+>【报告地址】:
+<font color="info">[Allure详细报告，请点击查看]({report_url})</font>
+"""
+all_string = first_string + failed_info + failed_string + broken_info + broken_string + end_string
 data_mk = {
     "msgtype": "markdown",
     "markdown": {
-        "content": 33333
+        "content": all_string
     }
 }
-
-phone_list = []
 for author in author_list:
     if author in list(phone_mapping.keys()):
         phone_list.append(phone_mapping[author])
