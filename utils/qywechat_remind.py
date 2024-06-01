@@ -15,7 +15,10 @@ host = "http://localhost:8080/"
 username = 'admin'
 password = 'niotest123456'
 webhook = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=f4959107-c1d3-47f2-be78-098f80c2d194"
+env = "test"
+stage = "回归测试"
 job = "auto_api_test"
+maintainer = "米兔1号"
 server = jenkins.Jenkins(host, username=username, password=password)
 last_build_number = server.get_job_info(job)['lastCompletedBuild']['number']
 build_info = server.get_build_info(job, last_build_number)
@@ -29,7 +32,11 @@ test_status = json.loads(build_info['description'])
 print("测试结果：", test_status)
 total = test_status["total"]
 passed = test_status["passed"]
+passed_ratio = round(passed / total, 4) * 100
+print("passed_ratio", passed_ratio)
 failed = test_status["failed"]
+failed_ratio = round((100 - passed_ratio),2)
+print("failed:", failed_ratio)
 error = test_status["error"]
 skipped = test_status["skipped"]
 duration = test_status["duration"]
@@ -62,18 +69,22 @@ data = {
     "msgtype": "markdown",
     "markdown": {
         "content":
-            f"""<font color="">钉钉oapi接口测试报告</font>
-        >【用例总数】:<font color="comment">{total}</font>
-        >【测试通过】:<font color="info">{passed}</font>
-        >【测试失败】:<font color="warning">{failed}</font>
-        >【测试错误】<font color="comment">{error}</font>
-        >【测试跳过】<font color="comment">{skipped}</font>
-        >【测试耗时】:<font color="comment">{duration}s</font>
-        >【测试时间】:<font color="comment">{build_time}</font>
+            f"""<font color="">钉钉oapi接口测试任务执行报告通知</font>
+        >【任务名称】:<font color="comment">{job}</font>
+        >【测试阶段】:<font color="comment">{stage}</font>
         >【测试结果】:<font color={"info" if success else "warning"}>{"通过~" if success else "失败!"}</font>{chr(0x1f600) if success else chr(0x1f627)}
-        >[Allure详细报告，请点击查看]({report_url})"""
-
-    }
+        >【用例总数】:<font color="comment">{total}</font>
+        >【通过数】:<font color="info">{passed}</font>
+        >【通过率】:<font color="comment">{passed_ratio}%</font>
+        >【失败数】:<font color="warning">{failed}</font>
+        >【失败率】:<font color="comment">{failed_ratio}%</font>
+        >【错误数】<font color="comment">{error}</font>
+        >【跳过数】<font color="comment">{skipped}</font>
+        >【执行人】<font color="comment">@{maintainer}</font>
+        >【执行时间】:<font color="comment">{build_time}</font>
+        >【执行耗时】:<font color="comment">{duration}s</font>
+        >[查看测试报告]({report_url})""",
+}
 }
 requests.post(url=webhook, json=data)
 # 单个报告，详细数据
@@ -96,7 +107,7 @@ print("failed_list", failed_list)
 broken_list = jmespath.search("[?status=='broken']", url_list)
 print("broken_list", broken_list)
 phone_list = []
-first_string = f"""<font color="">钉钉oapi接口测试报错信息汇总</font>"""
+first_string = f"""<font color="">钉钉oapi接口测试任务执行错误日志通知</font>"""
 
 failed_info = f"""
         >【失败用例】:
@@ -119,20 +130,20 @@ if not failed_string:
 if not broken_string:
     broken_string = f"""><font color="comment">无</font>"""
 end_string = f""" 
->【报告地址】:
-<font color="info">[Allure详细报告，请点击查看]({report_url})</font>
+><font color="info">[查看测试报告]({report_url})</font>
 """
 all_string = first_string + failed_info + failed_string + broken_info + broken_string + end_string
+for author in author_list:
+    if author in list(phone_mapping.keys()):
+        phone_list.append(phone_mapping[author])
+# print(phone_list)
 data_mk = {
     "msgtype": "markdown",
     "markdown": {
         "content": all_string
     }
 }
-for author in author_list:
-    if author in list(phone_mapping.keys()):
-        phone_list.append(phone_mapping[author])
-# print(phone_list)
+
 
 data_tx = {
     "msgtype": "text",

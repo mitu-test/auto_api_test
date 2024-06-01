@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<head>
+    <meta charset="UTF8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <title>Unittest Report</title>
+</head>
+<body>
+<div style="text-align: center;">
+<table class="table" border="1" style="border-collapse: collapse;margin: auto;table-layout:auto;width: 50%"><tr>
+    <caption style="color: #28a745 ;">项目${PROJECT_NAME} 用例执行结果如下:</caption>
+    <td style="color: #28a745;width: 10%">测试人员</td>
+    <td style="color: #28a745;width: 30%">XXX</td>
+    <td style="color: #28a745 ;width: 10% " >用例总数</td>
+    <td style="color: #28a745 ;width: 10%">${TEST_COUNTS,var="total"}</td>
+</tr>
+    <tr>
+    <td style="color: #28a745;width: 10%">构建编号</td>
+        <td style="color: #28a745;width: 30%">${BUILD_NUMBER}</td>
+        <td style="color: gold ;width: 10%">成功用例</td>
+        <td style="color: gold ;width: 10% ">${TEST_COUNTS,var="pass"}</td>
+</tr>
+    <tr>
+    <td style="color: #28a745;width: 10%">构建结果</td>
+        <td style="color: #28a745;width: 30%">${BUILD_STATUS}</td>
+        <td style="color:red ;width: 10%">失败用例</td>
+        <td style="color: red ;width: 10% ">${TEST_COUNTS,var="fail"}</td>
+</tr>
+    <tr>
+        <td style="color: #28a745; width: 10%">构建地址</td>
+        <td style="color: #28a745 ;word-wrap:break-word;word-break:break-all; width: 30%">
+            <a href= "${BUILD_URL}">${BUILD_URL}</a></td>
+        <td style="color:gray ;width: 10% ">跳过用例</td>
+        <td style="color: gray ;width: 10%" >${TEST_COUNTS,var="skip"}</td>
+</tr>
+    <tr>
+        <td style="color: #28a745 ;width: 10%">HTML报告地址</td>
+        <td colspan="3" style="color: #28a745 ;word-wrap:break-word;word-break:break-all;width: 30%;">
+            <a href="${PROJECT_URL}">${PROJECT_URL}/HTML_20Report/</a></td>
+</tr>
+</table>
+</div>
+</body>
+</html>
