@@ -42,7 +42,7 @@ tests:
         }
     expectation:
       validate:
-        - eq: [ errmsg, "ok" ]
+        - eq: [ errmsg, "okk" ]
         - eq: [ result, True ]
         - eq: [ success, True]
     report:
