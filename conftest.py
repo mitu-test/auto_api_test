@@ -296,7 +296,7 @@ def pytest_sessionfinish(session, exitstatus):
                 shutil.copy(from_allure_enviornment_path, to_allure_enviornment_path)
                 os.system(f"allure generate ../../reports/allure_results -o ../../reports/allure_reports -clean")
                 # 直接打开allure报告
-                os.system(f"allure serve ../../reports/allure_results")
+                # os.system(f"allure serve ../../reports/allure_results")
             else:
                 print('allure不在环境变量中，无法直接生成htmL报告!')
         except Exception as e:
