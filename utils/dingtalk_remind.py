@@ -48,7 +48,7 @@ USERNAME = "admin"
 TOKEN = "118bfff6c447ee06c6d70684f6686bd42e"
 url_suites = f"{report_url}/data/suites.json"
 print("url_suites", url_suites)
-res = requests.get(url_suites, auth=(USERNAME, TOKEN))
+res = requests.get(url_suites, auth=(USERNAME, TOKEN),timeout=20)
 print("res", res)
 s_url = f"{report_url}/#suites/"
 print('s_url', s_url)
