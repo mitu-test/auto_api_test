@@ -12,7 +12,7 @@ import jenkins
 import smtplib
 from email.mime.text import MIMEText
 
-host = "http://localhost:8080/"
+host = "http://localhost:8081/"
 username = 'admin'
 password = 'niotest123456'
 webhook = "https://oapi.dingtalk.com/robot/send?access_token=bffb1003f5b0ac9d9be5f8c863a38e2d646a69cd231147524829ffbba10e0fa3"

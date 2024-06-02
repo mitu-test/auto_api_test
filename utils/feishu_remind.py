@@ -11,7 +11,7 @@ import jenkins
 import requests
 import jmespath
 
-host = "http://localhost:8080/"
+host = "http://localhost:8081/"
 username = 'admin'
 password = 'niotest123456'
 webhook = "https://open.feishu.cn/open-apis/bot/v2/hook/c864de8a-cac3-4523-b234-85269cf4945d"

@@ -11,7 +11,7 @@ import jenkins
 import requests
 import jmespath
 
-host = "http://localhost:8080/"
+host = "http://localhost:8081/"
 username = 'admin'
 password = 'niotest123456'
 webhook = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=f4959107-c1d3-47f2-be78-098f80c2d194"
