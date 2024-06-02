@@ -20,7 +20,7 @@ stage = "回归测试"
 job = "auto_api_test"
 maintainer = "米兔1号"
 server = jenkins.Jenkins(host, username=username, password=password)
-last_build_number = server.get_job_info(job)['lastCompletedBuild']['number']
+last_build_number = server.get_job_info(job)['lastCompletedBuild']['number'] + 1
 build_info = server.get_build_info(job, last_build_number)
 print("构建信息：", build_info)
 console_url = build_info['url'] + "console"
@@ -46,7 +46,7 @@ success = total == (passed + skipped) if passed != 0 else False
 # 使用Jenkins API token 模拟登录
 USERNAME = "admin"
 # Jenkins API token
-TOKEN = "113b81ae7fd66046859f1b9833d391621a"
+TOKEN = "118bfff6c447ee06c6d70684f6686bd42e"
 url_suites = f"{report_url}/data/suites.json"
 # print("url_suites", url_suites)
 res = requests.get(url_suites, auth=(USERNAME, TOKEN))
