@@ -20,13 +20,14 @@ stage = "回归测试"
 job = "auto_test_api"
 maintainer = "米兔1号"
 server = jenkins.Jenkins(host, username=username, password=password)
-last_build_number = server.get_job_info(job)['lastCompletedBuild']['number'] +1
+last_build_number = server.get_job_info(job)['lastCompletedBuild']['number']
 build_info = server.get_build_info(job, last_build_number)
 print("构建信息：", build_info)
 console_url = build_info['url'] + "console"
 print("console:", console_url)
 report_url = build_info['url'] + 'allure'
 print("report_url:", report_url)
+print()
 test_status = json.loads(build_info['description'])
 print("测试结果：", test_status)
 total = test_status["total"]
@@ -47,15 +48,15 @@ USERNAME = "admin"
 # Jenkins API token
 TOKEN = "118bfff6c447ee06c6d70684f6686bd42e"
 url_suites = f"{report_url}/data/suites.json"
-print("url_suites", url_suites)
+# print("url_suites", url_suites)
 res = requests.get(url_suites, auth=(USERNAME, TOKEN))
-print("res", res.json())
+print("res", res.content)
 s_url = f"{report_url}/#suites/"
-print('s_url', s_url)
+# print('s_url', s_url)
 url_raw_list = jmespath.search(
     "children[].children[].children[].children[?status=='failed'||status=='broken'].{name:name,parentUid:parentUid,uid:uid,status:status,tags:tags}",
     res.json())
-print("url_raw_list", url_raw_list)
+# print("url_raw_list", url_raw_list)
 
 url_list = []
 for raw in url_raw_list[0]:
