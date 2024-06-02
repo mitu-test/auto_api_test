@@ -20,7 +20,7 @@ stage = "回归测试"
 job = "auto_test_api"
 maintainer = "米兔1号"
 server = jenkins.Jenkins(host, username=username, password=password)
-last_build_number = server.get_job_info(job)['lastCompletedBuild']['number'] +1
+last_build_number = server.get_job_info(job)['lastCompletedBuild']['number'] 
 build_info = server.get_build_info(job, last_build_number)
 print("构建信息：", build_info)
 console_url = build_info['url'] + "console"
